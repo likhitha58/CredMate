@@ -1,42 +1,46 @@
-// Login.jsx
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
+import "../styles/login.css";
+import logo from "../assets/logo.png";
 
-export default function Login() {
+const Login = () => {
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="card shadow p-4" style={{ width: "400px", borderRadius: "20px" }}>
-        <h2 className="text-center mb-4" style={{ color: "#0d6efd" }}>Login</h2>
+    <div className="login-page">
+      <div className="login-logo-wrapper">
+        <img src={logo} alt="Logo" className="login-logo-small" />
+      </div>
+      <div className="login-container single-column">
+        <div className="login-card">
 
-        {/* Google Login */}
-        <button
-          className="btn btn-outline-dark w-100 mb-3 d-flex align-items-center justify-content-center gap-2"
-        >
-          <FcGoogle size={22} /> Sign in with Google
-        </button>
+          <h2>Welcome Back 👋</h2>
+          <p className="login-subtitle">Please login to continue</p>
 
-        <div className="text-center mb-3 text-muted">or</div>
+          <form>
+            <input type="email" placeholder="Email" required />
+            <input type="password" placeholder="Password" required />
+            <button type="submit" className="btn-primary">Login</button>
+          </form>
 
-        {/* Manual Login */}
-        <form>
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input type="email" className="form-control" placeholder="Enter your email" required />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input type="password" className="form-control" placeholder="Enter your password" required />
+          <div className="divider">
+            <span>or</span>
           </div>
 
-          <button type="submit" className="btn btn-primary w-100">Login</button>
-        </form>
+          <button className="btn-google">
+            <FcGoogle className="google-icon"/> Continue with Google
+          </button>
 
-        <div className="text-center mt-3">
-          <small>
-            Don't have an account? <a href="/signup">Sign Up</a>
-          </small>
+          <p className="signup-link">
+            Don’t have an account? <a href="/signup">Sign up</a>
+          </p>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="login-footer">
+        <p className="text-center">© 2025 CredMate</p>
+      </footer>
     </div>
   );
-}
+};
+
+export default Login;

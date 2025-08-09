@@ -1,12 +1,39 @@
 // Signup.jsx
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import "../styles/signup.css";
 
 export default function Signup() {
   const [otpSent, setOtpSent] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  // Password validation function
+  const validatePassword = (value) => {
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,20}$/;
+    if (!regex.test(value)) {
+      setPasswordError(
+        "Password must have 1 uppercase letter, 1 special character, 1 number, and be 8-20 characters long."
+      );
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    validatePassword(value);
+  };
+
+  const handleSendOtp = () => {
+    if (!passwordError && password) {
+      setOtpSent(true);
+    }
+  };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div className="min-vh-100 d-flex align-items-center justify-content-center">
       <div className="card shadow p-4" style={{ width: "400px", borderRadius: "20px" }}>
         <h2 className="text-center mb-4" style={{ color: "#0d6efd" }}>Sign Up</h2>
 
@@ -29,21 +56,32 @@ export default function Signup() {
             <label className="form-label">Email</label>
             <input type="email" className="form-control" placeholder="Enter your email" required />
           </div>
+
           {!otpSent && (
             <>
-              <div className="mb-3">
+              <div className="mb-2">
                 <label className="form-label">Password</label>
-                <input type="password" className="form-control" placeholder="Create a password" required />
+                <input
+                  type="password"
+                  className={`form-control ${passwordError ? "is-invalid" : ""}`}
+                  placeholder="Create a password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  required
+                />
+                {passwordError && <div className="invalid-feedback">{passwordError}</div>}
               </div>
               <button
                 type="button"
-                className="btn btn-primary w-100"
-                onClick={() => setOtpSent(true)}
+                className="btn btn-primary w-100 mt-2"
+                onClick={handleSendOtp}
+                disabled={!!passwordError || !password}
               >
                 Send OTP
               </button>
             </>
           )}
+
           {otpSent && (
             <>
               <div className="mb-3 mt-3">

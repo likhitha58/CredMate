@@ -1,0 +1,183 @@
+/* Full page layout */
+.login-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #000f1f;
+  color: white;
+}
+
+/* Logo section above form */
+.login-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.login-logo-small {
+  width: 90px;
+  height: auto;
+  animation: fadeInDown 0.6s ease-in-out;
+}
+
+/* Main container - single centered card */
+.login-container.single-column {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Login card styling */
+.login-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2rem;
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 380px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.login-card h2 {
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+.login-subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  margin-bottom: 1.5rem;
+}
+
+/* Form fields */
+.login-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-card input {
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.login-card input:focus {
+  outline: 2px solid #1f6feb;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Primary button */
+.btn-primary {
+  padding: 0.8rem;
+  background: #1f6feb;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #1158c7;
+  transform: translateY(-2px);
+}
+
+/* Google button */
+.btn-google {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+  background: #e0e0e0;
+}
+
+/* Divider line */
+.divider {
+  text-align: center;
+  margin: 1rem 0;
+  position: relative;
+}
+
+.divider span {
+  background: transparent;
+  padding: 0 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 0;
+}
+
+/* Signup link */
+.signup-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.signup-link a {
+  color: #1f6feb;
+  text-decoration: none;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+.login-footer {
+  background: #000f1f;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .login-card {
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+
+  .login-logo-small {
+    width: 70px;
+  }
+}

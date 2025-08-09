@@ -2,7 +2,10 @@ import React from "react";
 import '../styles/WelcomePage.css';
 import logo from '../assets/logo.png';
 import image from '../assets/welcomepgimg.png';
+import { useNavigate } from "react-router-dom";
+
 const WelcomePage = () => {
+  const navigate = useNavigate();
   return (
     <div>
       {/* Navbar */}
@@ -29,8 +32,8 @@ const WelcomePage = () => {
             </ul>
 
             <div className="text-end">
-              <button type="button" className="btn btn-outline-light me-2">Login</button>
-              <button type="button" className="btn btn-warning">Sign-up</button>
+              <button type="button" className="btn btn-outline-light me-2" onClick={() => navigate("/login")}>Login</button>
+              <button type="button" className="btn btn-warning" onClick={() => navigate("/signup")}>Sign-up</button>
             </div>
           </div>
         </div>
