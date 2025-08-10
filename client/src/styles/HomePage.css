@@ -82,59 +82,81 @@ body {
   font-size: 0.9rem;
   color: #aaa;
 }
-.how-it-works {
-  padding: 50px 20px;
-  background: #0d1b2a;
-  text-align: center;
+
+/* Steps Section */
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  padding: 0 20px;
 }
 
-.how-it-works h2 {
-  font-size: 2rem;
-  margin-bottom: 30px;
-  color: #ffffff;
-}
-
-.flowchart {
+.steps-row {
   display: flex;
   justify-content: center;
-  align-items: center;
+  gap: 25px;
   flex-wrap: wrap;
 }
 
-.step {
-  background: white;
+.step-card {
+  background: #ffffff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   width: 220px;
-  margin: 10px;
-  position: relative;
+  text-align: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
 }
 
 .step-number {
-  background-color: #203a43;
-  color: white;
-  font-size: 1.5rem;
+  display: inline-block;
+  background: #00d4ff;
+  color: #000;
+  font-size: 1.2rem;
   font-weight: bold;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
   border-radius: 50%;
-  margin: 0 auto 10px auto;
+  margin-bottom: 10px;
 }
 
-.arrow {
-  font-size: 2rem;
-  color: #ffffff;
-  margin: 0 15px;
+.step-card p {
+  font-size: 1rem;
+  color: #0d1b2a;
+  margin: 0;
 }
 
+/* Button for Steps Section */
+.start-btn {
+  background: #00d4ff;
+  color: #000;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 30px;
+  transition: background 0.3s ease;
+}
+
+.start-btn:hover {
+  background: #00aacc;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .flowchart {
-    flex-direction: column;
-  }
-  .arrow {
-    transform: rotate(90deg);
-    margin: 10px 0;
+  .steps-row {
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
   }
 }

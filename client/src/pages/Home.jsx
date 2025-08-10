@@ -2,7 +2,11 @@ import React from "react";
 import "../styles/HomePage.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
+
 const HomePage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="homepage">
       {/* Navbar */}
@@ -15,43 +19,75 @@ const HomePage = () => {
           Analyze loan eligibility, compare banks, and get personalized
           financial advice with CredMate.
         </p>
-        <a href="#" className="cta-btn">Check My Loan Eligibility</a>
+        <button
+          className="cta-btn"
+          onClick={() => navigate("/loananalyzer")}
+        >
+          Check My Loan Eligibility
+        </button>
       </section>
 
-      {/* Features Section */}
       {/* How It Works Section */}
-      <section className="how-it-works">
-        <h2>How CredMate Works</h2>
-        <div className="flowchart" style={{color:'#0d1b2a'}}>
-          <div className="step">
-            <div className="step-number">1</div>
-            <h3>Create Your Account</h3>
-            <p>Sign up for free to access all features of CredMate.</p>
+      <div
+        className="steps-container"
+        style={{ marginTop: "50px", marginBottom: "50px" }}
+      >
+        {/* Row 1 */}
+        <div className="steps-row">
+          <div
+            className="step-card"
+            onClick={() => navigate("/signup")}
+            style={{ cursor: "pointer" }}
+          >
+            <span className="step-number">1</span>
+            <p>Enter your gmail and signup</p>
           </div>
-          <div className="arrow">→</div>
-
-          <div className="step">
-            <div className="step-number">2</div>
-            <h3>Enter Loan Details</h3>
-            <p>Provide your loan amount, tenure, and income details.</p>
+          <div
+            className="step-card"
+            onClick={() => navigate("/loananalyzer")}
+            style={{ cursor: "pointer" }}
+          >
+            <span className="step-number">2</span>
+            <p>Provide your loan information</p>
           </div>
-          <div className="arrow">→</div>
-
-          <div className="step">
-            <div className="step-number">3</div>
-            <h3>Analyze & Compare</h3>
-            <p>Get AI-powered analysis and compare bank offers.</p>
-          </div>
-          <div className="arrow">→</div>
-
-          <div className="step">
-            <div className="step-number">4</div>
-            <h3>Negotiate & Apply</h3>
-            <p>Use our negotiation assistant and apply with confidence.</p>
+          <div
+            className="step-card"
+            onClick={() => navigate("/loananalyzer")}
+            style={{ cursor: "pointer" }}
+          >
+            <span className="step-number">3</span>
+            <p>Get your eligibility results</p>
           </div>
         </div>
-      </section>
 
+        {/* Row 2 */}
+        <div className="steps-row reverse-row">
+          <div
+            className="step-card"
+            onClick={() => navigate("/documents-checklist")}
+            style={{ cursor: "pointer" }}
+          >
+            <span className="step-number">6</span>
+            <p>Get your documents checklisted</p>
+          </div>
+          <div
+            className="step-card"
+            onClick={() => navigate("/negotiate-ai")}
+            style={{ cursor: "pointer" }}
+          >
+            <span className="step-number">5</span>
+            <p>Work with our Negotiate AI</p>
+          </div>
+          <div
+            className="step-card"
+            onClick={() => navigate("/loan-offers")}
+            style={{ cursor: "pointer" }}
+          >
+            <span className="step-number">4</span>
+            <p>Explore and compare other loans and bank offers</p>
+          </div>
+        </div>
+      </div>
 
       {/* Footer */}
       <Footer />

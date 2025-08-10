@@ -30,12 +30,12 @@ const Footer = () => {
       <p>
         © {new Date().getFullYear()} CredMate. All rights reserved.
         <a
-          href="/suuport"
+          href="/faqs"
           style={linkStyle}
           onMouseOver={(e) => (e.target.style.textDecoration = "underline")}
           onMouseOut={(e) => (e.target.style.textDecoration = "none")}
         >
-          Support
+          FAQ's
         </a>
         |
         <a

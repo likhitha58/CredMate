@@ -1,0 +1,102 @@
+.loan-analyzer-page {
+  display: flex;
+  max-width: 1100px;
+  margin: 40px auto;
+  gap: 30px;
+}
+
+.loan-form-section {
+  flex: 2;
+  background: #0d1b2a;
+  color: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+}
+
+.page-title {
+  font-size: 26px;
+  margin-bottom: 10px;
+  color: #00b4d8;
+}
+
+.page-description {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: #c9d6df;
+}
+
+.loan-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.loan-form label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.loan-form input,
+.loan-form select {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #1b263b;
+  color: white;
+}
+
+.analyze-btn {
+  background: #00b4d8;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.analyze-btn:hover {
+  background: #0096c7;
+}
+
+.result-box {
+  margin-top: 20px;
+  padding: 15px;
+  background: #1b263b;
+  border-radius: 6px;
+}
+
+.result-box h3 {
+  color: #90e0ef;
+}
+
+/* Right Column */
+.loan-offers-section {
+  flex: 1;
+  background: #1b263b;
+  padding: 25px;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  height: fit-content;
+}
+
+.offer-btn {
+  display: block;
+  width: 100%;
+  background: #0077b6;
+  color: white;
+  padding: 12px;
+  margin: 15px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.offer-btn:hover {
+  background: #0096c7;
+}

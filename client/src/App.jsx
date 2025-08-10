@@ -6,6 +6,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ResetPassword from './pages/ResetPassword';
 import HomePage from './pages/Home';
+import LoanAnalyzer from './pages/LoanAnalyzerPage';
+import FAQ from './components/FAQ';
 const App = () => {
   return (
     <BrowserRouter>
@@ -15,6 +17,9 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/loananalyzer" element={<LoanAnalyzer />} />
+        <Route path="/faqs" element={<FAQ />} />
+        {/* Add more routes as needed */}
       </Routes>
     </BrowserRouter>
   );
