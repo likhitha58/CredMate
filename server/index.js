@@ -1,25 +1,29 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+// src/server.js
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+
+// Connect DB
+connectDB(process.env.MONGO_URI);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Base route
-app.get('/', (req, res) => {
-  res.send('Loan Advisor API is running!');
+// Routes
+app.use("/api/auth", authRoutes);
+
+// Test route
+app.get("/", (req, res) => {
+  res.send("API is running...");
 });
 
-// You can later import and use routes like:
-// import loanRoutes from './routes/loanRoutes.js';
-// app.use('/api/loan', loanRoutes);
-
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

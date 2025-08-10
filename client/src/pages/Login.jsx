@@ -33,7 +33,7 @@ const Login = () => {
           </button>
 
           <p className="signup-link">
-            Don’t have an account? <a href="/signup">Sign up</a>
+            Forgot Password? <a href="/resetpassword">Reset</a>
           </p>
         </div>
       </div>
