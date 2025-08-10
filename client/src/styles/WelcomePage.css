@@ -6,7 +6,7 @@
 }
 
 body {
-  background-color: #000f1f;
+  background-color: #000f1f !important;
   color: #ffffff;
   line-height: 1.6;
   scroll-behavior: smooth;
@@ -14,7 +14,7 @@ body {
 
 /* Navbar */
 .navbar {
-  background-color: #1b263b !important;
+  background-color: #000f1f !important;
   padding: 1rem 2rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }

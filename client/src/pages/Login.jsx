@@ -6,12 +6,14 @@ import logo from "../assets/logo.png";
 const Login = () => {
   return (
     <div className="login-page">
+      {/* Logo */}
       <div className="login-logo-wrapper">
         <img src={logo} alt="Logo" className="login-logo-small" />
       </div>
+
+      {/* Form Section */}
       <div className="login-container single-column">
         <div className="login-card">
-
           <h2>Welcome Back 👋</h2>
           <p className="login-subtitle">Please login to continue</p>
 
@@ -25,8 +27,9 @@ const Login = () => {
             <span>or</span>
           </div>
 
+          {/* Google Button */}
           <button className="btn-google">
-            <FcGoogle className="google-icon"/> Continue with Google
+            <FcGoogle className="google-icon" /> Continue with Google
           </button>
 
           <p className="signup-link">

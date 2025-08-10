@@ -7,7 +7,7 @@
   color: white;
 }
 
-/* Logo section above form */
+/* Logo section */
 .login-logo-wrapper {
   display: flex;
   justify-content: center;
@@ -20,7 +20,7 @@
   animation: fadeInDown 0.6s ease-in-out;
 }
 
-/* Main container - single centered card */
+/* Main container */
 .login-container.single-column {
   flex: 1;
   display: flex;
@@ -29,7 +29,7 @@
   padding: 1rem;
 }
 
-/* Login card styling */
+/* Card */
 .login-card {
   background: rgba(255, 255, 255, 0.08);
   padding: 2rem;
@@ -53,7 +53,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* Form fields */
+/* Form */
 .login-card form {
   display: flex;
   flex-direction: column;
@@ -94,10 +94,11 @@
 /* Google button */
 .btn-google {
   display: flex;
-  align-content: center;
-  justify-content: center;
+  align-items: center; /* centers vertically */
+  justify-content: center; /* centers horizontally */
   gap: 0.5rem;
   padding: 0.8rem;
+  width: 100%; /* matches input width */
   background: white;
   color: black;
   border: none;
@@ -111,7 +112,7 @@
   background: #e0e0e0;
 }
 
-/* Divider line */
+/* Divider */
 .divider {
   text-align: center;
   margin: 1rem 0;

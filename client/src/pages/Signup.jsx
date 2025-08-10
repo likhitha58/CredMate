@@ -1,6 +1,7 @@
 // Signup.jsx
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import logo from "../assets/logo.png";
 import "../styles/signup.css";
 
 export default function Signup() {
@@ -8,7 +9,6 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  // Password validation function
   const validatePassword = (value) => {
     const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,20}$/;
     if (!regex.test(value)) {
@@ -33,72 +33,88 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center">
-      <div className="card shadow p-4" style={{ width: "400px", borderRadius: "20px" }}>
-        <h2 className="text-center mb-4" style={{ color: "#0d6efd" }}>Sign Up</h2>
+    <div className="signup-page">
+      {/* Optional Logo */}
+      <div className="signup-logo-wrapper">
+        <img
+          src={logo}
+          alt="Logo"
+          className="signup-logo-small"
+        />
+      </div>
 
-        {/* Google Signup */}
-        <button
-          className="btn btn-outline-dark w-100 mb-3 d-flex align-items-center justify-content-center gap-2"
-        >
-          <FcGoogle size={22} /> Sign up with Google
-        </button>
+      <div className="signup-container single-column">
+        <div className="signup-card">
+          <h2>Sign Up</h2>
+          <p className="signup-subtitle">Create a new account</p>
 
-        <div className="text-center mb-3 text-muted">or</div>
+          {/* Google Signup */}
+          <button className="btn-google">
+            <FcGoogle size={22} /> Sign up with Google
+          </button>
 
-        {/* Manual Signup */}
-        <form>
-          <div className="mb-3">
-            <label className="form-label">Full Name</label>
-            <input type="text" className="form-control" placeholder="Enter your name" required />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input type="email" className="form-control" placeholder="Enter your email" required />
-          </div>
+          {/* Divider */}
+          <div className="divider"><span>OR</span></div>
 
-          {!otpSent && (
-            <>
-              <div className="mb-2">
-                <label className="form-label">Password</label>
+          {/* Signup Form */}
+          <form>
+            <input
+              type="text"
+              placeholder="Full Name"
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              required
+            />
+
+            {!otpSent && (
+              <>
                 <input
                   type="password"
-                  className={`form-control ${passwordError ? "is-invalid" : ""}`}
                   placeholder="Create a password"
                   value={password}
                   onChange={handlePasswordChange}
                   required
+                  className={passwordError ? "input-error" : ""}
                 />
-                {passwordError && <div className="invalid-feedback">{passwordError}</div>}
-              </div>
-              <button
-                type="button"
-                className="btn btn-primary w-100 mt-2"
-                onClick={handleSendOtp}
-                disabled={!!passwordError || !password}
-              >
-                Send OTP
-              </button>
-            </>
-          )}
+                {passwordError && <p className="error-text">{passwordError}</p>}
 
-          {otpSent && (
-            <>
-              <div className="mb-3 mt-3">
-                <label className="form-label">Enter OTP</label>
-                <input type="text" className="form-control" placeholder="6-digit code" required />
-              </div>
-              <button type="submit" className="btn btn-success w-100">Verify & Sign Up</button>
-            </>
-          )}
-        </form>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={handleSendOtp}
+                  disabled={!!passwordError || !password}
+                >
+                  Send OTP
+                </button>
+              </>
+            )}
 
-        <div className="text-center mt-3">
-          <small>
-            Already have an account? <a href="/login">Login</a>
-          </small>
+            {otpSent && (
+              <>
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  required
+                />
+                <button type="submit" className="btn-primary">
+                  Verify & Sign Up
+                </button>
+              </>
+            )}
+          </form>
+
+          {/* Login link */}
+          <div className="login-link">
+            Forgot Password? <a href="/resetpassword">Reset</a>         
+          </div>
         </div>
       </div>
+      <footer className="login-footer">
+        <p className="text-center">© 2025 CredMate</p>
+      </footer>
     </div>
   );
 }
