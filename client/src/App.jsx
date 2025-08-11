@@ -8,6 +8,7 @@ import ResetPassword from './pages/ResetPassword';
 import HomePage from './pages/Home';
 import LoanAnalyzer from './pages/LoanAnalyzerPage';
 import FAQ from './components/FAQ';
+import OTPVerification from "./pages/OTPVerification.jsx";
 const App = () => {
   return (
     <BrowserRouter>
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/home" element={<HomePage />} />
         <Route path="/loananalyzer" element={<LoanAnalyzer />} />
         <Route path="/faqs" element={<FAQ />} />
+         <Route path="/verify-otp" element={<OTPVerification />} />
         {/* Add more routes as needed */}
       </Routes>
     </BrowserRouter>

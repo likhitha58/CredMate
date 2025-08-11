@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import logo from "../assets/logo.png";
 import "../styles/signup.css";
-import { useNavigate } from "react-router-dom"; // For redirecting after success
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [otpSent, setOtpSent] = useState(false);
@@ -18,6 +18,9 @@ export default function Signup() {
 
   const navigate = useNavigate();
 
+  // Use environment variable for backend URL
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api/auth";
+
   const validatePassword = (value) => {
     const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,20}$/;
     if (!regex.test(value)) {
@@ -31,34 +34,23 @@ export default function Signup() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "password") {
-      validatePassword(value);
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "password") validatePassword(value);
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSendOtp = async () => {
     setErrorMsg("");
-    if (passwordError || !formData.password) return;
-
-    if (!formData.name || !formData.email) {
+    if (!formData.name || !formData.email || !formData.password) {
       setErrorMsg("Please fill all fields.");
       return;
     }
+    if (passwordError) return;
 
     setLoading(true);
-
     try {
-      const res = await fetch("/api/auth/signup", {
+      const res = await fetch(`${API_BASE}/signup`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
@@ -67,16 +59,16 @@ export default function Signup() {
       });
 
       const data = await res.json();
-
+      console.log("Signup API response:", data);
       if (!res.ok) {
         setErrorMsg(data.message || "Signup failed");
       } else {
         setOtpSent(true);
       }
-    } catch (error) {
+    } catch {
+      console.log("Signup API response:", data);
       setErrorMsg("Server error. Try again later.");
     }
-
     setLoading(false);
   };
 
@@ -84,32 +76,22 @@ export default function Signup() {
     e.preventDefault();
     setErrorMsg("");
     setLoading(true);
-
     try {
-      const res = await fetch("/api/auth/verify-otp", {
+      const res = await fetch(`${API_BASE}/verify-otp`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          otp: formData.otp,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, otp: formData.otp }),
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         setErrorMsg(data.message || "OTP verification failed");
       } else {
-        // OTP verified successfully - redirect to login or home page
-        alert("Signup successful! You can now login.");
-        navigate("/login");
+        navigate("/home"); // go to home after verification
       }
-    } catch (error) {
-      setErrorMsg("Server error. Try again later.");
+    } catch {
+      setErrorMsg("Server error during OTP verification.");
     }
-
     setLoading(false);
   };
 
@@ -128,9 +110,7 @@ export default function Signup() {
             <FcGoogle size={22} /> Sign up with Google
           </button>
 
-          <div className="divider">
-            <span>OR</span>
-          </div>
+          <div className="divider"><span>OR</span></div>
 
           <form onSubmit={otpSent ? handleVerifyOtp : (e) => e.preventDefault()}>
             <input
@@ -163,10 +143,7 @@ export default function Signup() {
                   required
                   className={passwordError ? "input-error" : ""}
                 />
-                {passwordError && (
-                  <p className="error-text">{passwordError}</p>
-                )}
-
+                {passwordError && <p className="error-text">{passwordError}</p>}
                 <button
                   type="button"
                   className="btn-primary"

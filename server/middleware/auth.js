@@ -2,17 +2,30 @@
 import jwt from "jsonwebtoken";
 
 const auth = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) return res.status(401).json({ message: "No token, authorization denied" });
-
   try {
+    const authHeader = req.headers.authorization;
+
+    // Check for Bearer token
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Authorization header missing or malformed" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { userId, email, iat, exp }
+
+    // Attach user payload to request
+    req.user = decoded; // e.g., { id, email, iat, exp }
+
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Token is not valid" });
+    console.error("JWT verification failed:", err.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 

@@ -64,14 +64,14 @@ const WelcomePage = () => {
             <div className="d-grid gap-2 d-md-flex justify-content-md-start">
               <button
                 type="button"
-                className="btn btn-primary btn-lg px-4 me-md-2"
+                className="btn "
                 style={{ backgroundColor: "#0d6efd", borderColor: "#0d6efd" }}
               >
                 Get Started
               </button>
               <button
                 type="button"
-                className="btn btn-outline-light btn-lg px-4"
+                className="btn btn-outline-light px-4"
                 style={{ borderColor: "#fff", color: "#0d6efd" }}
               >
                 Learn More
