@@ -9,6 +9,7 @@ const router = express.Router();
 const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.warn("⚠ Validation errors:", errors.array());
     return res.status(400).json({ errors: errors.array() });
   }
   next();
@@ -24,8 +25,20 @@ const otpValidation = [
     .withMessage("OTP must be numeric"),
 ];
 
-router.post("/signup", signupValidation, validateRequest, signup);
-router.post("/verify-otp", otpValidation, validateRequest, verifyOtp);
-router.post("/login", loginValidation, validateRequest, login);
+// Debug log for each route
+router.post("/signup", (req, res, next) => {
+  console.log("📩 POST /api/auth/signup called with body:", req.body);
+  next();
+}, signupValidation, validateRequest, signup);
+
+router.post("/verify-otp", (req, res, next) => {
+  console.log("🔍 POST /api/auth/verify-otp called with body:", req.body);
+  next();
+}, otpValidation, validateRequest, verifyOtp);
+
+router.post("/login", (req, res, next) => {
+  console.log("🔑 POST /api/auth/login called with body:", req.body);
+  next();
+}, loginValidation, validateRequest, login);
 
 export default router;

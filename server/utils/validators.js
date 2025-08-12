@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 
 export const signupValidation = [
-  body("name")
+  body("fullName")
     .isLength({ min: 2 })
     .withMessage("Name must be at least 2 characters."),
   body("email")
@@ -19,6 +19,7 @@ export const signupValidation = [
     .matches(/[!@#$%^&*(),.?":{}|<>]/)
     .withMessage("Password must contain a special character."),
 ];
+
 
 export const loginValidation = [
   body("email")

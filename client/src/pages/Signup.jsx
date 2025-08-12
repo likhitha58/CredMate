@@ -18,11 +18,9 @@ export default function Signup() {
 
   const navigate = useNavigate();
 
-  // Use environment variable for backend URL
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api/auth";
-
   const validatePassword = (value) => {
-    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,20}$/;
+    const regex =
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,20}$/;
     if (!regex.test(value)) {
       setPasswordError(
         "Password must have 1 uppercase letter, 1 special character, 1 number, and be 8-20 characters long."
@@ -38,8 +36,10 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api/aut
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSendOtp = async () => {
+  const handleSendOtp = () => {
+    console.log("🚀 Simulating OTP send with data:", formData);
     setErrorMsg("");
+
     if (!formData.name || !formData.email || !formData.password) {
       setErrorMsg("Please fill all fields.");
       return;
@@ -47,52 +47,29 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api/aut
     if (passwordError) return;
 
     setLoading(true);
-    try {
-      const res = await fetch(`${API_BASE}/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
 
-      const data = await res.json();
-      console.log("Signup API response:", data);
-      if (!res.ok) {
-        setErrorMsg(data.message || "Signup failed");
-      } else {
-        setOtpSent(true);
-      }
-    } catch {
-      console.log("Signup API response:", data);
-      setErrorMsg("Server error. Try again later.");
-    }
-    setLoading(false);
+    // Simulate API delay
+    setTimeout(() => {
+      console.log("✅ OTP simulated as sent");
+      setOtpSent(true);
+      setLoading(false);
+    }, 1500);
   };
 
-  const handleVerifyOtp = async (e) => {
+  const handleVerifyOtp = (e) => {
     e.preventDefault();
-    setErrorMsg("");
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_BASE}/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, otp: formData.otp }),
-      });
+    console.log("🚀 Simulating OTP verify:", formData.otp);
 
-      const data = await res.json();
-      if (!res.ok) {
-        setErrorMsg(data.message || "OTP verification failed");
+    setLoading(true);
+    setTimeout(() => {
+      if (formData.otp === "1234") {
+        console.log("✅ OTP correct, navigating to /home");
+        navigate("/home");
       } else {
-        navigate("/home"); // go to home after verification
+        setErrorMsg("Invalid OTP. Try '1234'.");
       }
-    } catch {
-      setErrorMsg("Server error during OTP verification.");
-    }
-    setLoading(false);
+      setLoading(false);
+    }, 1500);
   };
 
   return (
@@ -110,9 +87,13 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api/aut
             <FcGoogle size={22} /> Sign up with Google
           </button>
 
-          <div className="divider"><span>OR</span></div>
+          <div className="divider">
+            <span>OR</span>
+          </div>
 
-          <form onSubmit={otpSent ? handleVerifyOtp : (e) => e.preventDefault()}>
+          <form
+            onSubmit={otpSent ? handleVerifyOtp : (e) => e.preventDefault()}
+          >
             <input
               type="text"
               name="name"
@@ -143,12 +124,16 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api/aut
                   required
                   className={passwordError ? "input-error" : ""}
                 />
-                {passwordError && <p className="error-text">{passwordError}</p>}
+                {passwordError && (
+                  <p className="error-text">{passwordError}</p>
+                )}
                 <button
                   type="button"
                   className="btn-primary"
                   onClick={handleSendOtp}
-                  disabled={!!passwordError || !formData.password || loading}
+                  disabled={
+                    !!passwordError || !formData.password || loading
+                  }
                 >
                   {loading ? "Sending OTP..." : "Send OTP"}
                 </button>
@@ -160,12 +145,16 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api/aut
                 <input
                   type="text"
                   name="otp"
-                  placeholder="Enter OTP"
+                  placeholder="Enter OTP (try 1234)"
                   value={formData.otp}
                   onChange={handleChange}
                   required
                 />
-                <button type="submit" className="btn-primary" disabled={loading}>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={loading}
+                >
                   {loading ? "Verifying..." : "Verify & Sign Up"}
                 </button>
               </>

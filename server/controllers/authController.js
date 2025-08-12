@@ -12,41 +12,55 @@ const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString()
 
 // Signup: create user + send OTP
 export const signup = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-        if (!name || !email || !password)
-            return res.status(400).json({ message: "All fields are required" });
+  console.log("📩 Signup endpoint hit with body:", req.body);
 
-        const existingUser = await User.findOne({ email });
-        if (existingUser)
-            return res.status(400).json({ message: "Email already registered" });
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const otp = generateOtp();
-        const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // OTP valid 10 mins
-
-        const newUser = new User({
-            fullName: name,
-            email,
-            password: hashedPassword,
-            otp,
-            otpExpires,
-            isVerified: false,
-        });
-
-        await newUser.save();
-
-        // TODO: Send OTP to user email here (or SMS) - skipping for now
-        await sendOtpEmail(email, otp);
-        res.status(201).json({
-            message: "User registered successfully. OTP sent to your email.",
-            email,
-        });
-    } catch (error) {
-        console.error("Signup Error:", error);
-        res.status(500).json({ message: "Server error" });
+  try {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      console.warn("⚠ Missing required fields");
+      return res.status(400).json({ message: "All fields are required" });
     }
+
+    const existingUser = await User.findOne({ email });
+    console.log("🔍 Existing user lookup result:", existingUser);
+
+    if (existingUser) {
+      console.warn("⚠ Email already registered:", email);
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("🔑 Password hashed successfully");
+
+    const otp = generateOtp();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    console.log(`📨 Generated OTP: ${otp} (expires: ${otpExpires})`);
+
+    const newUser = new User({
+      fullName: name,
+      email,
+      password: hashedPassword,
+      otp,
+      otpExpires,
+      isVerified: false,
+    });
+
+    console.log("💾 Saving new user to DB...");
+    await newUser.save();
+    console.log("✅ User saved successfully:", newUser._id);
+
+    console.log(`📧 Sending OTP email to ${email}`);
+    await sendOtpEmail(email, otp);
+    console.log("✅ OTP email sent successfully");
+
+    res.status(201).json({
+      message: "User registered successfully. OTP sent to your email.",
+      email,
+    });
+  } catch (error) {
+    console.error("❌ Signup Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Verify OTP
