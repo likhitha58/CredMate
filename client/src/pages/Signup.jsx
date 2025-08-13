@@ -1,16 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
 import logo from "../assets/logo.png";
 import "../styles/signup.css";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const location = useLocation();
-React.useEffect(() => {
-  if (location.state?.email) {
-    setFormData(prev => ({ ...prev, email: location.state.email }));
-  }
-}, [location.state]);
 export default function Signup() {
   const [otpSent, setOtpSent] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,6 +17,13 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.email) {
+      setFormData((prev) => ({ ...prev, email: location.state.email }));
+    }
+  }, [location.state]);
 
   const validatePassword = (value) => {
     const regex =
@@ -44,61 +44,66 @@ export default function Signup() {
   };
 
   const handleSendOtp = async () => {
-  if (!formData.name || !formData.email || !formData.password) {
-    setErrorMsg("Please fill all fields.");
+    if (!formData.name || !formData.email || !formData.password) {
+      setErrorMsg("Please fill all fields.");
+      return;
+    }
+    if (passwordError) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: formData.name, email: formData.email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      setOtpSent(true); // Now show OTP input
+    } catch (err) {
+      setErrorMsg(err.message);
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async (e) => {
+  e.preventDefault();
+  setErrorMsg("");
+
+  if (!formData.otp) {
+    setErrorMsg("Please enter OTP");
     return;
   }
-  if (passwordError) return;
 
-  setLoading(true);
   try {
-    const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+    setLoading(true);
+    const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: formData.name, email: formData.email }),
+      body: JSON.stringify({
+        name: formData.name,      // send name
+        email: formData.email,    // send email
+        password: formData.password, // send password
+        otp: formData.otp,        // send otp
+      }),
     });
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
-    // Navigate to OTP page with email prefilled
-    navigate("/verify-otp", { state: { email: formData.email } });
-  } catch (err) {
-    setErrorMsg(err.message);
+    // Save JWT in localStorage
+    localStorage.setItem("token", data.token);
+
+    navigate("/home");
+  } catch (error) {
+    setErrorMsg(error.message);
+  } finally {
+    setLoading(false);
   }
-  setLoading(false);
 };
 
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-
-    if (!formData.otp) {
-      setErrorMsg("Please enter OTP");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          otp: formData.otp,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      console.log("✅ OTP verified:", data);
-      navigate("/home");
-    } catch (error) {
-      setErrorMsg(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="signup-page">
