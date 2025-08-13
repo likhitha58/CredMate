@@ -3,7 +3,14 @@ import { FcGoogle } from "react-icons/fc";
 import logo from "../assets/logo.png";
 import "../styles/signup.css";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
+const location = useLocation();
+React.useEffect(() => {
+  if (location.state?.email) {
+    setFormData(prev => ({ ...prev, email: location.state.email }));
+  }
+}, [location.state]);
 export default function Signup() {
   const [otpSent, setOtpSent] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,40 +43,61 @@ export default function Signup() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSendOtp = () => {
-    console.log("🚀 Simulating OTP send with data:", formData);
+  const handleSendOtp = async () => {
+  if (!formData.name || !formData.email || !formData.password) {
+    setErrorMsg("Please fill all fields.");
+    return;
+  }
+  if (passwordError) return;
+
+  setLoading(true);
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: formData.name, email: formData.email }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    // Navigate to OTP page with email prefilled
+    navigate("/verify-otp", { state: { email: formData.email } });
+  } catch (err) {
+    setErrorMsg(err.message);
+  }
+  setLoading(false);
+};
+
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
     setErrorMsg("");
 
-    if (!formData.name || !formData.email || !formData.password) {
-      setErrorMsg("Please fill all fields.");
+    if (!formData.otp) {
+      setErrorMsg("Please enter OTP");
       return;
     }
-    if (passwordError) return;
 
-    setLoading(true);
-
-    // Simulate API delay
-    setTimeout(() => {
-      console.log("✅ OTP simulated as sent");
-      setOtpSent(true);
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: formData.otp,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      console.log("✅ OTP verified:", data);
+      navigate("/home");
+    } catch (error) {
+      setErrorMsg(error.message);
+    } finally {
       setLoading(false);
-    }, 1500);
-  };
-
-  const handleVerifyOtp = (e) => {
-    e.preventDefault();
-    console.log("🚀 Simulating OTP verify:", formData.otp);
-
-    setLoading(true);
-    setTimeout(() => {
-      if (formData.otp === "1234") {
-        console.log("✅ OTP correct, navigating to /home");
-        navigate("/home");
-      } else {
-        setErrorMsg("Invalid OTP. Try '1234'.");
-      }
-      setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -131,9 +159,7 @@ export default function Signup() {
                   type="button"
                   className="btn-primary"
                   onClick={handleSendOtp}
-                  disabled={
-                    !!passwordError || !formData.password || loading
-                  }
+                  disabled={!!passwordError || !formData.password || loading}
                 >
                   {loading ? "Sending OTP..." : "Send OTP"}
                 </button>
@@ -145,7 +171,7 @@ export default function Signup() {
                 <input
                   type="text"
                   name="otp"
-                  placeholder="Enter OTP (try 1234)"
+                  placeholder="Enter OTP"
                   value={formData.otp}
                   onChange={handleChange}
                   required

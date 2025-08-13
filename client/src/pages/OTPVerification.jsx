@@ -15,10 +15,15 @@ export default function OTPVerification() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setErrorMsg("");
-    setLoading(true);
+
+    if (!formData.email || !formData.otp) {
+      setErrorMsg("Please fill in both fields.");
+      return;
+    }
 
     try {
-      const res = await fetch("/api/auth/verify-otp", {
+      setLoading(true);
+      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -29,13 +34,14 @@ export default function OTPVerification() {
       if (!res.ok) {
         setErrorMsg(data.message || "OTP verification failed");
       } else {
-        // Successful verification - redirect to home
-        navigate("/");
+        console.log("✅ OTP verified successfully:", data);
+        navigate("/home"); // redirect after success
       }
     } catch (error) {
       setErrorMsg("Server error during OTP verification.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
