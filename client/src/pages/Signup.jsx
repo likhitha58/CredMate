@@ -43,7 +43,8 @@ export default function Signup() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSendOtp = async () => {
+  const handleSendOtp = async (e) => {
+    if (e) e.preventDefault();
     if (!formData.name || !formData.email || !formData.password) {
       setErrorMsg("Please fill all fields.");
       return;
@@ -55,55 +56,53 @@ export default function Signup() {
       const res = await fetch("http://localhost:5000/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: formData.name, email: formData.email }),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
       });
-
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-
-      setOtpSent(true); // Now show OTP input
+      if (res.ok) {
+        setOtpSent(true);
+        setErrorMsg("");
+      } else {
+        setErrorMsg(data.message);
+      }
     } catch (err) {
-      setErrorMsg(err.message);
+      setErrorMsg("Error sending OTP");
     }
     setLoading(false);
   };
 
   const handleVerifyOtp = async (e) => {
-  e.preventDefault();
-  setErrorMsg("");
-
-  if (!formData.otp) {
-    setErrorMsg("Please enter OTP");
-    return;
-  }
-
-  try {
+    e.preventDefault();
+    if (!formData.otp) {
+      setErrorMsg("Please enter OTP");
+      return;
+    }
     setLoading(true);
-    const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: formData.name,      // send name
-        email: formData.email,    // send email
-        password: formData.password, // send password
-        otp: formData.otp,        // send otp
-      }),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
-
-    // Save JWT in localStorage
-    localStorage.setItem("token", data.token);
-
-    navigate("/home");
-  } catch (error) {
-    setErrorMsg(error.message);
-  } finally {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: formData.otp,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        navigate("/home");
+      } else {
+        setErrorMsg(data.message);
+      }
+    } catch (err) {
+      setErrorMsg("Error verifying OTP");
+    }
     setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="signup-page">
@@ -124,9 +123,7 @@ export default function Signup() {
             <span>OR</span>
           </div>
 
-          <form
-            onSubmit={otpSent ? handleVerifyOtp : (e) => e.preventDefault()}
-          >
+          <form onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}>
             <input
               type="text"
               name="name"
@@ -161,9 +158,8 @@ export default function Signup() {
                   <p className="error-text">{passwordError}</p>
                 )}
                 <button
-                  type="button"
+                  type="submit"
                   className="btn-primary"
-                  onClick={handleSendOtp}
                   disabled={!!passwordError || !formData.password || loading}
                 >
                   {loading ? "Sending OTP..." : "Send OTP"}

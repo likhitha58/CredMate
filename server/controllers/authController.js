@@ -1,24 +1,24 @@
-import User from "../models/User.js";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import User from "../models/User.js";
 
-// Store OTPs temporarily in memory (for demo)
-const otpStore = {};
+let otpStore = {}; // Temporary store for OTPs
 
+// Send OTP
+// Send OTP
 export const sendOtp = async (req, res) => {
+  const { name, email, password } = req.body;
   try {
-    const { email, name } = req.body;
-    if (!email || !name) {
-      return res.status(400).json({ message: "Name and email are required" });
-    }
+    // Check if already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ message: "Email already registered" });
 
-    // Generate 6-digit OTP
+    // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otpStore[email] = { otp, name, password, expires: Date.now() + 5 * 60 * 1000 };
 
-    // Save OTP in memory with expiry (5 mins)
-    otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 };
-
-    // Send OTP via email
+    // Nodemailer setup
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -27,54 +27,77 @@ export const sendOtp = async (req, res) => {
       },
     });
 
+    // Email HTML template
+    const htmlTemplate = `
+      <div style="font-family:Sansation; padding: 20px; background: #f4f4f4;">
+        <div style="max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px;">
+          <h2 style="text-align: center; color: #4CAF50;">CredMate Verification</h2>
+          <p>Hi <strong>${name}</strong>,</p>
+          <p>Thank you for signing up! Please use the OTP below to complete your registration:</p>
+          <div style="text-align: center; margin: 20px 0;">
+            <span style="font-size: 32px; letter-spacing: 4px; color: #333; font-weight: bold;">${otp}</span>
+          </div>
+          <p style="color: #555;">⚠ This OTP will expire in <strong>5 minutes</strong>.</p>
+          <p>If you did not request this, please ignore this email.</p>
+          <hr style="margin: 20px 0;" />
+          <p style="font-size: 12px; text-align: center; color: #999;">
+            &copy; ${new Date().getFullYear()} CredMate. All rights reserved.
+          </p>
+        </div>
+      </div>
+    `;
+
+    // Send the email
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"CredMate" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Your OTP Code",
-      text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
+      subject: "Your CredMate OTP Code",
+      html: htmlTemplate,
     });
 
     res.json({ message: "OTP sent successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error sending OTP" });
+  } catch (err) {
+    res.status(500).json({ message: "Error sending OTP", error: err.message });
   }
 };
 
+
+// Verify OTP and Register
 export const verifyOtp = async (req, res) => {
-  try {
-    const { email, otp, password, name } = req.body;
+  const { email, otp } = req.body;
 
-    if (!otpStore[email]) {
-      return res.status(400).json({ message: "OTP not sent or expired" });
-    }
+  const storedData = otpStore[email];
+  if (!storedData) return res.status(400).json({ message: "No OTP found for this email" });
 
-    const { otp: storedOtp, expiresAt } = otpStore[email];
-
-    if (Date.now() > expiresAt) {
-      delete otpStore[email];
-      return res.status(400).json({ message: "OTP expired" });
-    }
-
-    if (storedOtp !== otp) {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
-
-    // Create new user in MongoDB
-    const newUser = new User({ name, email, password });
-    await newUser.save();
-
-    // Delete OTP after verification
+  if (Date.now() > storedData.expires) {
     delete otpStore[email];
+    return res.status(400).json({ message: "OTP expired" });
+  }
+
+  if (storedData.otp !== otp) {
+    return res.status(400).json({ message: "Invalid OTP" });
+  }
+
+  try {
+    // Create new user
+    const hashedPassword = await bcrypt.hash(storedData.password, 10);
+    const user = new User({
+      name: storedData.name,
+      email,
+      password: hashedPassword,
+    });
+    await user.save();
 
     // Generate JWT
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
     });
 
-    res.json({ message: "OTP verified successfully", token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error verifying OTP" });
+    // Clear OTP
+    delete otpStore[email];
+
+    res.json({ message: "Signup successful", token });
+  } catch (err) {
+    res.status(500).json({ message: "Error verifying OTP", error: err.message });
   }
 };
