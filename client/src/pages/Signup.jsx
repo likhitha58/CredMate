@@ -26,16 +26,17 @@ export default function Signup() {
   }, [location.state]);
 
   const validatePassword = (value) => {
-    const regex =
-      /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,20}$/;
+    // Must have at least 1 capital, 1 number, and 1 special char
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
     if (!regex.test(value)) {
       setPasswordError(
-        "Password must have 1 uppercase letter, 1 special character, 1 number, and be 8-20 characters long."
+        "Password must have at least 1 uppercase letter, 1 number, and 1 special character, and be at least 8 characters long."
       );
     } else {
       setPasswordError("");
     }
   };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
