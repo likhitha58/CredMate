@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import "../styles/navbar.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUserName(JSON.parse(storedUser).name || "");
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token"); // if stored
+    navigate("/"); // redirect to login or home page
+  };
 
   return (
     <header className="p-3">
@@ -47,9 +61,27 @@ export default function Navbar() {
               </button>
             </li>
           </ul>
-          <div className="text-end">
-              <button type="button" className="btn btn-outline-light me-2" onClick={() => navigate("/")}>Logout</button>
-            </div>
+
+          {/* User Dropdown */}
+          <div className="text-end dropdown">
+            <button
+              className="btn btn-outline-light dropdown-toggle"
+              type="button"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {userName || "User"}
+            </button>
+            <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <button className="dropdown-item" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            </ul>
+          </div>
+
         </div>
       </div>
     </header>

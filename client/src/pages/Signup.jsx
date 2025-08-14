@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FcGoogle } from "react-icons/fc";
 import logo from "../assets/logo.png";
 import "../styles/signup.css";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -26,17 +25,15 @@ export default function Signup() {
   }, [location.state]);
 
   const validatePassword = (value) => {
-    // Must have at least 1 capital, 1 number, and 1 special char
     const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
     if (!regex.test(value)) {
       setPasswordError(
-        "Password must have at least 1 uppercase letter, 1 number, and 1 special character, and be at least 8 characters long."
+        "Password must have at least 1 uppercase letter, 1 number, 1 special character, and be at least 8 characters long."
       );
     } else {
       setPasswordError("");
     }
   };
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,33 +74,39 @@ export default function Signup() {
   };
 
   const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    if (!formData.otp) {
-      setErrorMsg("Please enter OTP");
-      return;
+  e.preventDefault();
+  if (!formData.otp) {
+    setErrorMsg("Please enter OTP");
+    return;
+  }
+  setLoading(true);
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: formData.email,
+        otp: formData.otp,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      // Save token and name to localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ name: formData.name, email: formData.email })
+      );
+      navigate("/home");
+    } else {
+      setErrorMsg(data.message);
     }
-    setLoading(true);
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          otp: formData.otp,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/home");
-      } else {
-        setErrorMsg(data.message);
-      }
-    } catch (err) {
-      setErrorMsg("Error verifying OTP");
-    }
-    setLoading(false);
-  };
+  } catch (err) {
+    setErrorMsg("Error verifying OTP");
+  }
+  setLoading(false);
+};
+
 
   return (
     <div className="signup-page">
@@ -115,14 +118,6 @@ export default function Signup() {
         <div className="signup-card">
           <h2>Sign Up</h2>
           <p className="signup-subtitle">Create a new account</p>
-
-          <button className="btn-google">
-            <FcGoogle size={22} /> Sign up with Google
-          </button>
-
-          <div className="divider">
-            <span>OR</span>
-          </div>
 
           <form onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}>
             <input
