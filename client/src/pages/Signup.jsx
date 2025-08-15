@@ -41,8 +41,11 @@ export default function Signup() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ========================
+  // SEND SIGNUP OTP
+  // ========================
   const handleSendOtp = async (e) => {
-    if (e) e.preventDefault();
+    e.preventDefault();
     if (!formData.name || !formData.email || !formData.password) {
       setErrorMsg("Please fill all fields.");
       return;
@@ -65,48 +68,52 @@ export default function Signup() {
         setOtpSent(true);
         setErrorMsg("");
       } else {
-        setErrorMsg(data.message);
+        setErrorMsg(data.message || "Failed to send OTP");
       }
     } catch (err) {
-      setErrorMsg("Error sending OTP");
+      console.error("Send OTP error:", err);
+      setErrorMsg("Error sending OTP. Check server logs.");
     }
     setLoading(false);
   };
 
+  // ========================
+  // VERIFY OTP & REGISTER
+  // ========================
   const handleVerifyOtp = async (e) => {
-  e.preventDefault();
-  if (!formData.otp) {
-    setErrorMsg("Please enter OTP");
-    return;
-  }
-  setLoading(true);
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: formData.email,
-        otp: formData.otp,
-      }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      // Save token and name to localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ name: formData.name, email: formData.email })
-      );
-      navigate("/home");
-    } else {
-      setErrorMsg(data.message);
+    e.preventDefault();
+    if (!formData.otp) {
+      setErrorMsg("Please enter OTP");
+      return;
     }
-  } catch (err) {
-    setErrorMsg("Error verifying OTP");
-  }
-  setLoading(false);
-};
 
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: formData.otp,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ name: formData.name, email: formData.email })
+        );
+        navigate("/home");
+      } else {
+        setErrorMsg(data.message || "OTP verification failed");
+      }
+    } catch (err) {
+      console.error("Verify OTP error:", err);
+      setErrorMsg("Error verifying OTP. Check server logs.");
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="signup-page">
@@ -150,9 +157,7 @@ export default function Signup() {
                   required
                   className={passwordError ? "input-error" : ""}
                 />
-                {passwordError && (
-                  <p className="error-text">{passwordError}</p>
-                )}
+                {passwordError && <p className="error-text">{passwordError}</p>}
                 <button
                   type="submit"
                   className="btn-primary"
@@ -173,11 +178,7 @@ export default function Signup() {
                   onChange={handleChange}
                   required
                 />
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  disabled={loading}
-                >
+                <button type="submit" className="btn-primary" disabled={loading}>
                   {loading ? "Verifying..." : "Verify & Sign Up"}
                 </button>
               </>

@@ -8,11 +8,22 @@ export default function Navbar() {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
+  const updateUser = () => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUserName(JSON.parse(storedUser).name || "");
-    }
-  }, []);
+    setUserName(storedUser ? JSON.parse(storedUser).name : "");
+  };
+
+  // Initial load
+  updateUser();
+
+  // Listen for changes in other tabs/windows
+  window.addEventListener("storage", updateUser);
+
+  return () => {
+    window.removeEventListener("storage", updateUser);
+  };
+}, []);
+
 
   const handleLogout = () => {
     localStorage.removeItem("user");

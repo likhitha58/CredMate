@@ -7,7 +7,6 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -34,12 +33,22 @@ const Login = () => {
       const data = await res.json();
 
       if (res.ok) {
+        // Store token
         localStorage.setItem("token", data.token);
+
+        // Store user info including name from backend
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ name: data.name, email: formData.email })
+        );
+
+        // Redirect to home
         navigate("/home");
       } else {
         setErrorMsg(data.message || "Invalid credentials");
       }
     } catch (error) {
+      console.error("Login error:", error);
       setErrorMsg("Server error. Please try again later.");
     }
     setLoading(false);
@@ -82,6 +91,10 @@ const Login = () => {
 
           <p className="signup-link">
             Forgot Password? <a href="/resetpassword">Reset</a>
+          </p>
+
+          <p className="signup-link">
+            Don't have an account? <a href="/signup">Sign Up</a>
           </p>
         </div>
       </div>
