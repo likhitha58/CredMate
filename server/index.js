@@ -4,7 +4,7 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
-
+import loanRoutes from "./routes/loanRoutes.js";
 
 // Log environment variables for debugging
 console.log("EMAIL_USER (index.js):", process.env.EMAIL_USER);
@@ -29,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
+app.use("/api/loan", loanRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

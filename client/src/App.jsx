@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Welcome from './pages/Welcome';
@@ -8,7 +7,9 @@ import ResetPassword from './pages/ResetPassword';
 import HomePage from './pages/Home';
 import LoanAnalyzer from './pages/LoanAnalyzerPage';
 import FAQ from './components/FAQ';
-import OTPVerification from "./pages/OTPVerification.jsx";
+// import OTPVerification from "./pages/OTPVerification.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -17,11 +18,21 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/loananalyzer" element={<LoanAnalyzer />} />
+
+        {/* Protected Routes */}
+        <Route path="/home" element={
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/loananalyzer" element={
+          <ProtectedRoute>
+            <LoanAnalyzer />
+          </ProtectedRoute>
+        } />
+
         <Route path="/faqs" element={<FAQ />} />
-         <Route path="/verify-otp" element={<OTPVerification />} />
-        {/* Add more routes as needed */}
+        {/* <Route path="/verify-otp" element={<OTPVerification />} /> */}
       </Routes>
     </BrowserRouter>
   );

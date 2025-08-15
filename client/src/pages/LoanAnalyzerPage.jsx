@@ -17,27 +17,52 @@ const LoanAnalyzer = () => {
   });
 
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Call Hugging Face API here
-    console.log("Sending data:", formData);
-    setResult({
-      status: "Eligible",
-      reason: "Your credit score and income meet the requirements."
-    });
+    setResult(null);
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/loan/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Hugging Face API returns array of predictions
+        setResult({
+          status: data?.[0]?.label || "Unknown",
+          reason: `Confidence: ${(data?.[0]?.score * 100).toFixed(2)}%`
+        });
+      } else {
+        setResult({ status: "Error", reason: data.message || "Failed to analyze" });
+      }
+    } catch (err) {
+      console.error("Loan analysis error:", err);
+      setResult({ status: "Error", reason: "Server error. Try again later." });
+    }
+
+    setLoading(false);
   };
 
   return (
     <>
       <Navbar />
       <div className="loan-analyzer-page">
-        
         {/* Left Column - Loan Form */}
         <div className="loan-form-section">
           <h2 className="page-title">Loan Eligibility Analyzer</h2>
@@ -114,11 +139,13 @@ const LoanAnalyzer = () => {
               required
             />
 
-            <button type="submit" className="analyze-btn">Analyze</button>
+            <button type="submit" className="analyze-btn" disabled={loading}>
+              {loading ? "Analyzing..." : "Analyze"}
+            </button>
           </form>
 
           {result && (
-            <div className="result-box">
+            <div className={`result-box ${result.status === "Eligible" ? "eligible" : "not-eligible"}`}>
               <h3>Result: {result.status}</h3>
               <p>{result.reason}</p>
             </div>
@@ -141,7 +168,6 @@ const LoanAnalyzer = () => {
             View Bank Offers
           </button>
         </div>
-
       </div>
       <Footer />
     </>
