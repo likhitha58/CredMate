@@ -30,23 +30,23 @@ const LoanAnalyzer = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token"); // optional, if you add auth
       const res = await fetch("http://localhost:5000/api/loan/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        // Hugging Face API returns array of predictions
+        // Hugging Face classification returns array: [{label, score}]
         setResult({
           status: data?.[0]?.label || "Unknown",
-          reason: `Confidence: ${(data?.[0]?.score * 100).toFixed(2)}%`
+          reason: `Confidence: ${(data?.[0]?.score * 100).toFixed(2)}%`,
         });
       } else {
         setResult({ status: "Error", reason: data.message || "Failed to analyze" });
@@ -145,7 +145,11 @@ const LoanAnalyzer = () => {
           </form>
 
           {result && (
-            <div className={`result-box ${result.status === "Eligible" ? "eligible" : "not-eligible"}`}>
+            <div
+              className={`result-box ${
+                result.status === "Eligible" ? "eligible" : "not-eligible"
+              }`}
+            >
               <h3>Result: {result.status}</h3>
               <p>{result.reason}</p>
             </div>

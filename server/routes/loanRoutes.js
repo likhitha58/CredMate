@@ -1,10 +1,10 @@
 import express from "express";
 import { analyzeLoan } from "../controllers/loanController.js";
-import { verifyToken } from "../middleware/authMiddleware.js";
+// import { verifyToken } from "../middleware/authMiddleware.js"; // if you want auth
 
 const router = express.Router();
 
-// Protected route for analyzing loan eligibility
-router.post("/analyze", verifyToken, analyzeLoan);
+// Loan analysis route (remove verifyToken while testing)
+router.post("/analyze", analyzeLoan);
 
 export default router;

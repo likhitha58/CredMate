@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 
 export const analyzeLoan = async (req, res) => {
   const modelApiUrl =
-    "https://api-inference.huggingface.co/models/lakshyaexists/Credit-risk-app";
+    "https://api-inference.huggingface.co/models/your-username/your-model"; 
   const apiKey = process.env.HF_API_KEY;
 
   try {
@@ -12,29 +12,22 @@ export const analyzeLoan = async (req, res) => {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ inputs: req.body }),
+      // Hugging Face expects { inputs: ... }
+      body: JSON.stringify({
+        inputs: req.body, 
+      }),
     });
 
-    const responseText = await response.text(); // read as text first
-    let data;
+    const result = await response.json();
+    console.log("HF API Response:", result);
 
-    try {
-      data = JSON.parse(responseText); // try parsing JSON
-    } catch {
-      // Not JSON
-      console.error("Hugging Face response not JSON:", responseText);
-      return res
-        .status(500)
-        .json({ message: "Hugging Face response not JSON", raw: responseText });
+    if (!response.ok) {
+      return res.status(500).json({ message: result.error || "Hugging Face API error" });
     }
 
-    if (response.ok) {
-      res.json(data);
-    } else {
-      res.status(500).json({ message: data.error || "Hugging Face API error" });
-    }
+    res.json(result); // Pass directly to frontend
   } catch (err) {
     console.error("Loan analysis error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", details: err.message });
   }
 };
